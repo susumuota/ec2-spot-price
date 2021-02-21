@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "ec2-spot-price"
-version = "0.1.15"
+version = "0.1.16"
 description = "ec2-spot-price: retrieve Amazon EC2 spot instance price"
 license = "Apache-2.0"
 authors = ["Susumu OTA <1632335+susumuota@users.noreply.github.com>"]
@@ -14,6 +14,7 @@ documentation = "https://github.com/susumuota/ec2-spot-price"
 keywords = ["amazon", "aws", "ec2", "spot instance", "price"]
 classifiers = [
     "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
