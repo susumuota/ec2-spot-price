@@ -8,9 +8,9 @@ license = "Apache-2.0"
 authors = ["Susumu OTA <1632335+susumuota@users.noreply.github.com>"]
 # maintainers = 
 readme = "README.md"
-homepage = "https://github.com/susumuota/ec2_spot_price"
-repository = "https://github.com/susumuota/ec2_spot_price"
-documentation = "https://github.com/susumuota/ec2_spot_price"
+homepage = "https://github.com/susumuota/ec2-spot-price"
+repository = "https://github.com/susumuota/ec2-spot-price"
+documentation = "https://github.com/susumuota/ec2-spot-price"
 keywords = ["amazon", "aws", "ec2", "spot instance", "price"]
 classifiers = [
     "Development Status :: 4 - Beta",
