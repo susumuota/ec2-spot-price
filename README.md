@@ -1,9 +1,11 @@
 # ec2-spot-price: Retrieve Amazon EC2 spot instance price
 
-This Python module provides simple functions and command to retrieve [Amazon EC2 spot instance price](https://aws.amazon.com/ec2/spot/pricing/) by AWS API
+This Python module provides simple functions and commands to retrieve [Amazon EC2 spot instance price](https://aws.amazon.com/ec2/spot/pricing/) by AWS API.
 
 
 ## Install
+
+Install by `pip`. Or [`pipx`](https://pipxproject.github.io/pipx/) may be convenient to use as a CLI application.
 
 ```sh
 pip install ec2-spot-price
@@ -11,47 +13,72 @@ pip install ec2-spot-price
 
 ## Setup
 
-You should setup [AWS authentication credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) which have permissions to access EC2 [`DescribeSpotPriceHistory`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html) API. A simple way to do is to [create IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach [`AmazonEC2ReadOnlyAccess`](https://console.aws.amazon.com/iam/home#policies/arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess) policy directly. (Or you can use existent credentials which have permissions to access that API)
+You need to setup [AWS authentication credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration) which have permissions to access [`ec2:DescribeSpotPriceHistory`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html) and [ec2:DescribeRegions](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html) APIs.
 
-### Access IAM console
+A simple way to do is to [create a new IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach `AmazonEC2ReadOnlyAccess` policy directly to the user. Or you can use existent credentials which have permissions to access `ec2:DescribeSpotPriceHistory` and `ec2:DescribeRegions` APIs.
 
-Login to AWS console and access [IAM console](https://console.aws.amazon.com/iam/home)
+### Create a new IAM user
 
-### Add new IAM user
+Create a new IAM user like the following.
 
-Add new IAM user like the following.
-
-- User name: `myuser`  # whatever you want
-- Access type: Programmatic access
-- Set permissions: Attach existing policies directly
+- Go to [IAM console](https://console.aws.amazon.com/iam/home)
+- Click `Users` and `Add user`
+- User name: `myuser` (whatever you want)
+- Access type: `Programmatic access`
+- Click `Next: Permissions`
+- Set permissions: `Attach existing policies directly`
 - Policy name: `AmazonEC2ReadOnlyAccess`
-- Download .csv
+- Click `Next: Tags`
+- Click `Next: Review`
+- Click `Create user`
+- Click `Download .csv`
+- Click `Close`
 
+#### Note: custom policy
+
+If you don't want to attach `AmazonEC2ReadOnlyAccess` policy, you can [create a new policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create-console.html) that only allows to access `ec2:DescribeSpotPriceHistory` and `ec2:DescribeRegions` APIs. Then attach this policy instead of `AmazonEC2ReadOnlyAccess` policy.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeSpotPriceHistory",
+                "ec2:DescribeRegions"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
 
 ### Edit ~/.aws/credentials
 
 You can use "[named profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)" to have multiple credentials settings.
 
-```ini:~/.aws/credentials
+```ini
 [myprofile]  # whatever you want, or [default]
 aws_access_key_id=[copy from csv]
 aws_secret_access_key=[copy from csv]
 region=us-east-2  # wherever you want
 ```
 
-## Usage
-
-### Run as command
-
-You can run `ec2_spot_price` command to retrieve spot instance prices.
-
-If you use "named profile" in credentials file, you need to specify `AWS_PROFILE` environment variable.
+If you use "named profile", you need to specify `AWS_PROFILE` environment variable.
 
 ```sh
 export AWS_PROFILE=myprofile
 ```
 
-Then, run command `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`).
+
+## Usage
+
+### `ec2_spot_price` command
+
+You can run `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`) command to retrieve spot instance prices.
+
+`-h` option shows help message.
 
 ```sh
 % ec2_spot_price -h
@@ -99,7 +126,7 @@ SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
 
 In this case, you should use `c5.xlarge` at `us-east-2` region.
 
-An another example to retrieve all of the spot prices in all regions with verbose option.
+Another example to retrieve all of the spot prices in all regions with verbose option.
 
 ```sh
 % ec2_spot_price -r "" -i "" -o "" -v > spot_prices.csv
@@ -114,9 +141,9 @@ An another example to retrieve all of the spot prices in all regions with verbos
 Then open `spot_prices.csv` with spread sheet application like Excel.
 
 
-### Use as module
+### `ec2_spot_price` module
 
-There are two functions. `get_spot_prices` retrieves spot prices as list. `spot_prices_to_csv` convert spot prices to CSV.
+There are two functions. Function `get_spot_prices` retrieves spot prices as list. Function `spot_prices_to_csv` converts spot prices to CSV. For example,
 
 ```python
 % python
@@ -145,8 +172,8 @@ SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
 0.103000,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-21 06:55:57+00:00
 ```
 
-An another example to retrieve all of the spot prices in all regions.
-You can use `pd.DataFrame` for more specific filtering.
+Another example to retrieve all of the spot prices in all regions.
+You can pass spot prices to `pd.DataFrame` and filter them.
 
 ```python
 % python
@@ -190,6 +217,7 @@ You can use `pd.DataFrame` for more specific filtering.
 - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html
 - https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-spot-price-history.html
 - https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html
+- https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html
 - https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html?highlight=describe%20spot#EC2.Client.describe_spot_price_history
 - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html
 - https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration
