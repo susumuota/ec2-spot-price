@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "ec2-spot-price"
-version = "0.1.16"
+version = "0.1.17"
 description = "ec2-spot-price: retrieve Amazon EC2 spot instance price"
 license = "Apache-2.0"
 authors = ["Susumu OTA <1632335+susumuota@users.noreply.github.com>"]
