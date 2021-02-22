@@ -33,6 +33,7 @@ def get_spot_prices(region_names=[], instance_types=[], os_types=[],
         ec2 = boto3.client('ec2')
         # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html
         return [r['RegionName'] for r in ec2.describe_regions()['Regions']]
+
     def get_spot_price(region_name, instance_types, os_types):
         ec2 = boto3.client('ec2', region_name=region_name)
         logger.info(f'retrieving from {region_name}...')
@@ -42,11 +43,12 @@ def get_spot_prices(region_names=[], instance_types=[], os_types=[],
         page_iterator = paginator.paginate(
             InstanceTypes=instance_types,
             ProductDescriptions=os_types,
-            StartTime=datetime.now(timezone.utc).isoformat(), # only latest one
+            StartTime=datetime.now(timezone.utc).isoformat(),  # only latest
             PaginationConfig={'PageSize': page_size, 'MaxItems': max_items})
         rs = sum([p['SpotPriceHistory'] for p in page_iterator], [])
         logger.info(f'retrieving from {region_name}...done. {len(rs)} items.')
         return rs
+
     rs = region_names or get_region_names()
     ps = sum([get_spot_price(r, instance_types, os_types) for r in rs], [])
     if ps and len(ps) > 0:
@@ -55,19 +57,22 @@ def get_spot_prices(region_names=[], instance_types=[], os_types=[],
         logger.warning(f'No items found. args: {region_names}, {instance_types}, {os_types}')
     return ps
 
+
 def spot_prices_to_csv(spot_prices, path_or_buf=None,
-                       columns=['SpotPrice', 'AvailabilityZone', 'InstanceType',
-                                'ProductDescription', 'Timestamp'],
-                       sep=',', header=True, index=True,
-                       sort=False, ascending=True):
+                       columns=['SpotPrice',
+                                'AvailabilityZone',
+                                'InstanceType',
+                                'ProductDescription',
+                                'Timestamp'],
+                       header=True, index=True, sort=False, ascending=True):
     if spot_prices and len(spot_prices) > 0:
         df = pd.DataFrame(spot_prices)
         if sort:
             df.sort_values(by=columns, ascending=ascending, inplace=True)
-        return df.to_csv(path_or_buf=path_or_buf, columns=columns, sep=sep,
+        return df.to_csv(path_or_buf=path_or_buf, columns=columns,
                          header=header, index=index)
     else:
-        return '' # or None?
+        return ''  # or None?
 
 
 def main():
@@ -81,9 +86,6 @@ def main():
     parser.add_argument('-o', '--os_types', type=str,
                         default='Linux/UNIX',
                         help='filter OS types. (default: "Linux/UNIX")')
-    parser.add_argument('-s', '--sep', type=str,
-                        default=',',
-                        help='separator of CSV. (default: ",")')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
     args = parser.parse_args()
@@ -95,7 +97,7 @@ def main():
     i = args.instance_types.split(',') if args.instance_types else []
     o = args.os_types.split(',') if args.os_types else []
     spot_prices_to_csv(get_spot_prices(r, i, o),
-                       path_or_buf=sys.stdout, sep=args.sep, index=False, sort=True)
+                       path_or_buf=sys.stdout, index=False, sort=True)
     return 0
 
 

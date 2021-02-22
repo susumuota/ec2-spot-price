@@ -56,7 +56,7 @@ Then, run command `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`).
 ```sh
 % ec2_spot_price -h
 usage: ec2_spot_price.py [-h] [-r REGION_NAMES] [-i INSTANCE_TYPES]
-                         [-o OS_TYPES] [-s SEP] [-v]
+                         [-o OS_TYPES] [-v]
 
 retrieve Amazon EC2 spot instance price
 
@@ -71,7 +71,6 @@ optional arguments:
                         (default: retrieve all of the instance types)
   -o OS_TYPES, --os_types OS_TYPES
                         filter OS types. (default: "Linux/UNIX")
-  -s SEP, --sep SEP     separator of CSV. (default: ",")
   -v, --verbose         increase output verbosity
 ```
 
@@ -191,6 +190,7 @@ You can use `pd.DataFrame` for more specific filtering.
 - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html
 - https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-spot-price-history.html
 - https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html
+- https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html?highlight=describe%20spot#EC2.Client.describe_spot_price_history
 - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html
 - https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration
 
