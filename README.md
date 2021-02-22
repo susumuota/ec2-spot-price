@@ -38,7 +38,7 @@ Create a new IAM user like the following.
 
 If you don't want to attach `AmazonEC2ReadOnlyAccess` policy, you can [create a new policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create-console.html) that only allows to access `ec2:DescribeSpotPriceHistory` and `ec2:DescribeRegions` APIs. Then attach this policy instead of `AmazonEC2ReadOnlyAccess` policy.
 
-```json
+```yaml
 {
     "Version": "2012-10-17",
     "Statement": [
