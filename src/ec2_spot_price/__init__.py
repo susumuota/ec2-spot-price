@@ -1,5 +1,5 @@
-from .ec2_spot_price import get_spot_prices, spot_prices_to_csv
+from .ec2_spot_price import get_spot_prices, print_csv, print_table
 
-__version__ = '0.1.17'
+__version__ = '0.2.0'
 
-__all__ = ['get_spot_prices', 'spot_prices_to_csv']
+__all__ = ['get_spot_prices', 'print_csv', 'print_table']
