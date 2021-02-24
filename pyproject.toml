@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "ec2-spot-price"
-version = "0.1.17"
+version = "0.2.0"
 description = "ec2-spot-price: retrieve Amazon EC2 spot instance price"
 license = "Apache-2.0"
 authors = ["Susumu OTA <1632335+susumuota@users.noreply.github.com>"]
@@ -32,6 +32,7 @@ classifiers = [
 python = "^3.7.1"
 boto3 = "^1.17.12"
 pandas = "^1.2.2"
+rich = "^9.11.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"
