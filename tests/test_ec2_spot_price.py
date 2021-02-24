@@ -1,18 +1,27 @@
-from ec2_spot_price import __version__, get_spot_prices, spot_prices_to_csv
+from ec2_spot_price import __version__, get_spot_prices, print_csv, print_table
 
 
 def test_version():
-    assert __version__ == '0.1.17'
+    assert __version__ == '0.2.0'
 
 def test_get_spot_prices():
-    r = get_spot_prices(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'],
+    sp = get_spot_prices(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'],
                         ['c5.xlarge', 'c5d.xlarge'],
                         ['Linux/UNIX'])
-    assert len(r) == 28
+    assert len(sp) == 28
 
-def test_spot_prices_to_csv():
-    r = get_spot_prices(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'],
+def test_print_csv(capsys):
+    sp = get_spot_prices(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'],
                         ['c5.xlarge', 'c5d.xlarge'],
                         ['Linux/UNIX'])
-    csv = spot_prices_to_csv(r)
-    assert len(csv) == 2034
+    print_csv(sp)
+    captured = capsys.readouterr()
+    assert len(captured.out) == 1960
+
+def test_print_table(capsys):
+    sp = get_spot_prices(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'],
+                        ['c5.xlarge', 'c5d.xlarge'],
+                        ['Linux/UNIX'])
+    print_table(sp)
+    captured = capsys.readouterr()
+    assert len(captured.err) == 2368
