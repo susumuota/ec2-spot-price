@@ -13,7 +13,7 @@ pip install ec2-spot-price
 
 ## Setup
 
-You need to setup [AWS authentication credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration) which have permissions to access [`ec2:DescribeSpotPriceHistory`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html) and [ec2:DescribeRegions](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html) APIs.
+You need to setup [AWS authentication credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration) which have permissions to access [`ec2:DescribeSpotPriceHistory`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html) and [`ec2:DescribeRegions`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html) APIs.
 
 A simple way to do is to [create a new IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) and attach `AmazonEC2ReadOnlyAccess` policy directly to the user. Or you can use existent credentials which have permissions to access `ec2:DescribeSpotPriceHistory` and `ec2:DescribeRegions` APIs.
 
@@ -82,8 +82,8 @@ You can run `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`) command to
 
 ```sh
 % ec2_spot_price -h
-usage: ec2_spot_price.py [-h] [-r REGION_NAMES] [-i INSTANCE_TYPES]
-                         [-o OS_TYPES] [-v]
+usage: ec2_spot_price [-h] [-r REGION_NAMES] [-i INSTANCE_TYPES] [-o OS_TYPES]
+                      [-csv]
 
 retrieve Amazon EC2 spot instance price
 
@@ -98,30 +98,33 @@ optional arguments:
                         (default: retrieve all of the instance types)
   -o OS_TYPES, --os_types OS_TYPES
                         filter OS types. (default: "Linux/UNIX")
-  -v, --verbose         increase output verbosity
+  -csv, --csv           output CSV format. (default: False)
 ```
 
-You can specify region names by `-r`, instance types by `-i` and OS types by `-o`. For example, the following command shows CSV of `us-east-1,us-east-2` regions, `c5.xlarge,c5d.xlarge` instances and `Linux/UNIX` OS (default value).
+You can specify region names by `-r`, instance types by `-i` and OS types by `-o`. For example, the following command shows table of `us-east-1,us-east-2` regions, `c5.xlarge,c5d.xlarge` instances and `Linux/UNIX` OS (default value).
 
 ```sh
 % ec2_spot_price -r "us-east-1,us-east-2" -i "c5.xlarge,c5d.xlarge"
-SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
-0.038000,us-east-2a,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2b,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2c,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2c,c5d.xlarge,Linux/UNIX,2021-02-21 08:05:53+00:00
-0.038100,us-east-2a,c5d.xlarge,Linux/UNIX,2021-02-21 04:50:26+00:00
-0.038100,us-east-2b,c5d.xlarge,Linux/UNIX,2021-02-21 03:59:40+00:00
-0.066400,us-east-1f,c5d.xlarge,Linux/UNIX,2021-02-20 20:03:30+00:00
-0.071700,us-east-1b,c5.xlarge,Linux/UNIX,2021-02-21 07:37:58+00:00
-0.071800,us-east-1a,c5d.xlarge,Linux/UNIX,2021-02-20 16:31:38+00:00
-0.073600,us-east-1d,c5.xlarge,Linux/UNIX,2021-02-21 06:21:58+00:00
-0.075000,us-east-1c,c5.xlarge,Linux/UNIX,2021-02-21 08:54:30+00:00
-0.077100,us-east-1a,c5.xlarge,Linux/UNIX,2021-02-21 08:03:27+00:00
-0.081500,us-east-1d,c5d.xlarge,Linux/UNIX,2021-02-21 07:55:25+00:00
-0.082700,us-east-1c,c5d.xlarge,Linux/UNIX,2021-02-21 03:41:22+00:00
-0.091100,us-east-1b,c5d.xlarge,Linux/UNIX,2021-02-21 09:45:08+00:00
-0.103000,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-21 06:55:57+00:00
+ ─────────────────────────────────────────────────────────────────────── 
+  Price      Zone         Instance     OS           Timestamp            
+ ─────────────────────────────────────────────────────────────────────── 
+  0.038000   us-east-2a   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2a   c5d.xlarge   Linux/UNIX   2021-02-24 18:23:40  
+  0.038000   us-east-2b   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2b   c5d.xlarge   Linux/UNIX   2021-02-24 20:49:32  
+  0.038000   us-east-2c   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2c   c5d.xlarge   Linux/UNIX   2021-02-24 08:06:21  
+  0.066500   us-east-1c   c5.xlarge    Linux/UNIX   2021-02-24 15:56:41  
+  0.066800   us-east-1f   c5d.xlarge   Linux/UNIX   2021-02-24 18:38:06  
+  0.069600   us-east-1a   c5d.xlarge   Linux/UNIX   2021-02-24 17:55:16  
+  0.069700   us-east-1d   c5.xlarge    Linux/UNIX   2021-02-24 19:28:40  
+  0.069900   us-east-1b   c5.xlarge    Linux/UNIX   2021-02-24 21:10:11  
+  0.072100   us-east-1a   c5.xlarge    Linux/UNIX   2021-02-24 16:55:41  
+  0.079600   us-east-1c   c5d.xlarge   Linux/UNIX   2021-02-24 21:01:42  
+  0.079600   us-east-1d   c5d.xlarge   Linux/UNIX   2021-02-24 14:31:55  
+  0.083700   us-east-1f   c5.xlarge    Linux/UNIX   2021-02-24 14:48:41  
+  0.090300   us-east-1b   c5d.xlarge   Linux/UNIX   2021-02-24 03:58:17  
+ ─────────────────────────────────────────────────────────────────────── 
 ```
 
 In this case, you should use `c5.xlarge` at `us-east-2` region.
@@ -129,13 +132,20 @@ In this case, you should use `c5.xlarge` at `us-east-2` region.
 Another example to retrieve all of the spot prices in all regions with verbose option.
 
 ```sh
-% ec2_spot_price -r "" -i "" -o "" -v > spot_prices.csv
-2021-02-21 20:21:38,686 INFO get_spot_price: retrieving from eu-north-1...
-2021-02-21 20:21:45,047 INFO get_spot_price: retrieving from eu-north-1...done. 1455 items.
-...
-2021-02-21 20:23:18,585 INFO get_spot_price: retrieving from us-west-2...
-2021-02-21 20:23:26,142 INFO get_spot_price: retrieving from us-west-2...done. 4880 items.
-2021-02-21 20:23:26,145 INFO get_spot_prices: retrieved 49627 items from ['eu-north-1', 'ap-south-1', 'eu-west-3', 'eu-west-2', 'eu-west-1', 'ap-northeast-2', 'ap-northeast-1', 'sa-east-1', 'ca-central-1', 'ap-southeast-1', 'ap-southeast-2', 'eu-central-1', 'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'].
+% ec2_spot_price -r "" -i "" -o "" -csv > spot_prices.csv
+% wc -l spot_prices.csv
+   49822 spot_prices.csv
+% head spot_prices.csv
+SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
+0.000800,ap-south-1a,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
+0.000800,ap-south-1a,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
+0.000800,ap-south-1b,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
+0.000800,ap-south-1b,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
+0.000800,ap-south-1c,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
+0.000800,ap-south-1c,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
+0.000900,ap-south-1a,t3a.nano,Linux/UNIX,2021-02-24 17:06:18+00:00
+0.000900,ap-south-1a,t3a.nano,SUSE Linux,2021-02-24 17:06:18+00:00
+0.000900,ap-south-1b,t3a.nano,Linux/UNIX,2021-02-24 17:06:18+00:00
 ```
 
 Then open `spot_prices.csv` with spread sheet application like Excel.
@@ -143,72 +153,97 @@ Then open `spot_prices.csv` with spread sheet application like Excel.
 
 ### `ec2_spot_price` module
 
-There are two functions. Function `get_spot_prices` retrieves spot prices as list. Function `spot_prices_to_csv` converts spot prices to CSV. For example,
+There are three functions.
+
+Function `get_spot_prices` retrieves spot prices as list.
+
+Function `print_csv` prints spot prices with CSV format.
+
+Function `print_table` prints spot prices with table format.
 
 ```python
 % python
->>> import sys
->>> import ec2_spot_price
->>> r = ec2_spot_price.get_spot_prices(['us-east-1', 'us-east-2'], ['c5.xlarge', 'c5d.xlarge'], ['Linux/UNIX'])
->>> len(r)
+>>> import ec2_spot_price as ec2sp
+>>> df = ec2sp.get_spot_prices(['us-east-1', 'us-east-2'], ['c5.xlarge', 'c5d.xlarge'], ['Linux/UNIX'])
+>>> len(df)
 16
->>> ec2_spot_price.spot_prices_to_csv(r, path_or_buf=sys.stdout, index=False, sort=True)
+>>> ec2sp.print_table(df)
+ ─────────────────────────────────────────────────────────────────────── 
+  Price      Zone         Instance     OS           Timestamp            
+ ─────────────────────────────────────────────────────────────────────── 
+  0.038000   us-east-2a   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2a   c5d.xlarge   Linux/UNIX   2021-02-24 18:23:40  
+  0.038000   us-east-2b   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2b   c5d.xlarge   Linux/UNIX   2021-02-24 20:49:32  
+  0.038000   us-east-2c   c5.xlarge    Linux/UNIX   2021-02-24 03:59:14  
+  0.038000   us-east-2c   c5d.xlarge   Linux/UNIX   2021-02-24 08:06:21  
+  0.066500   us-east-1c   c5.xlarge    Linux/UNIX   2021-02-24 15:56:41  
+  0.066800   us-east-1f   c5d.xlarge   Linux/UNIX   2021-02-24 18:38:06  
+  0.069600   us-east-1a   c5d.xlarge   Linux/UNIX   2021-02-24 17:55:16  
+  0.069700   us-east-1d   c5.xlarge    Linux/UNIX   2021-02-24 19:28:40  
+  0.069900   us-east-1b   c5.xlarge    Linux/UNIX   2021-02-24 21:10:11  
+  0.072100   us-east-1a   c5.xlarge    Linux/UNIX   2021-02-24 16:55:41  
+  0.079600   us-east-1c   c5d.xlarge   Linux/UNIX   2021-02-24 21:01:42  
+  0.079600   us-east-1d   c5d.xlarge   Linux/UNIX   2021-02-24 14:31:55  
+  0.082500   us-east-1f   c5.xlarge    Linux/UNIX   2021-02-24 21:35:41  
+  0.090300   us-east-1b   c5d.xlarge   Linux/UNIX   2021-02-24 03:58:17  
+ ─────────────────────────────────────────────────────────────────────── 
+>>> ec2sp.print_csv(df)
 SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
-0.038000,us-east-2a,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2b,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2c,c5.xlarge,Linux/UNIX,2021-02-21 02:12:51+00:00
-0.038000,us-east-2c,c5d.xlarge,Linux/UNIX,2021-02-21 08:05:53+00:00
-0.038100,us-east-2a,c5d.xlarge,Linux/UNIX,2021-02-21 04:50:26+00:00
-0.038100,us-east-2b,c5d.xlarge,Linux/UNIX,2021-02-21 03:59:40+00:00
-0.066400,us-east-1f,c5d.xlarge,Linux/UNIX,2021-02-20 20:03:30+00:00
-0.071700,us-east-1b,c5.xlarge,Linux/UNIX,2021-02-21 07:37:58+00:00
-0.071800,us-east-1a,c5d.xlarge,Linux/UNIX,2021-02-20 16:31:38+00:00
-0.073600,us-east-1d,c5.xlarge,Linux/UNIX,2021-02-21 06:21:58+00:00
-0.075000,us-east-1c,c5.xlarge,Linux/UNIX,2021-02-21 08:54:30+00:00
-0.077100,us-east-1a,c5.xlarge,Linux/UNIX,2021-02-21 08:03:27+00:00
-0.081500,us-east-1d,c5d.xlarge,Linux/UNIX,2021-02-21 07:55:25+00:00
-0.082700,us-east-1c,c5d.xlarge,Linux/UNIX,2021-02-21 03:41:22+00:00
-0.091100,us-east-1b,c5d.xlarge,Linux/UNIX,2021-02-21 09:45:08+00:00
-0.103000,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-21 06:55:57+00:00
+0.038000,us-east-2a,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
+0.038000,us-east-2a,c5d.xlarge,Linux/UNIX,2021-02-24 18:23:40+00:00
+0.038000,us-east-2b,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
+0.038000,us-east-2b,c5d.xlarge,Linux/UNIX,2021-02-24 20:49:32+00:00
+0.038000,us-east-2c,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
+0.038000,us-east-2c,c5d.xlarge,Linux/UNIX,2021-02-24 08:06:21+00:00
+0.066500,us-east-1c,c5.xlarge,Linux/UNIX,2021-02-24 15:56:41+00:00
+0.066800,us-east-1f,c5d.xlarge,Linux/UNIX,2021-02-24 18:38:06+00:00
+0.069600,us-east-1a,c5d.xlarge,Linux/UNIX,2021-02-24 17:55:16+00:00
+0.069700,us-east-1d,c5.xlarge,Linux/UNIX,2021-02-24 19:28:40+00:00
+0.069900,us-east-1b,c5.xlarge,Linux/UNIX,2021-02-24 21:10:11+00:00
+0.072100,us-east-1a,c5.xlarge,Linux/UNIX,2021-02-24 16:55:41+00:00
+0.079600,us-east-1c,c5d.xlarge,Linux/UNIX,2021-02-24 21:01:42+00:00
+0.079600,us-east-1d,c5d.xlarge,Linux/UNIX,2021-02-24 14:31:55+00:00
+0.082500,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-24 21:35:41+00:00
+0.090300,us-east-1b,c5d.xlarge,Linux/UNIX,2021-02-24 03:58:17+00:00
 ```
 
 Another example to retrieve all of the spot prices in all regions.
 You can pass spot prices to `pd.DataFrame` and filter them.
 
 ```python
-% python
->>> import pandas as pd
->>> import ec2_spot_price
->>> r = ec2_spot_price.get_spot_prices([], [], [])
->>> len(r)
-49627
->>> df = pd.DataFrame(r)
+>>> import ec2_spot_price as ec2sp
+>>> df = ec2sp.get_spot_prices([], [], [])
+>>> len(df)
+49817
 >>> df = df.query('ProductDescription == "Linux/UNIX"')
 >>> df = df.drop(['Timestamp', 'ProductDescription'], axis=1)
 >>> df = df.sort_values(by=['SpotPrice', 'AvailabilityZone', 'InstanceType'])
 >>> df = df.query('InstanceType.str.match("c5.?\.xlarge")')
+>>> len(df)
+187
 >>> df.head(20)
-      AvailabilityZone InstanceType SpotPrice
-41314       us-east-2a    c5.xlarge  0.038000
-40412       us-east-2a   c5d.xlarge  0.038000
-39457       us-east-2a   c5n.xlarge  0.038000
-41313       us-east-2b    c5.xlarge  0.038000
-39456       us-east-2b   c5n.xlarge  0.038000
-41312       us-east-2c    c5.xlarge  0.038000
-40831       us-east-2c   c5d.xlarge  0.038000
-39455       us-east-2c   c5n.xlarge  0.038000
-41169       us-east-2b   c5d.xlarge  0.038100
-39969       us-east-2c   c5a.xlarge  0.043100
-40929       us-east-2b   c5a.xlarge  0.044400
-2501       ap-south-1c   c5a.xlarge  0.052800
-1836       ap-south-1a   c5a.xlarge  0.053300
-2406       ap-south-1b   c5a.xlarge  0.053400
-1926       ap-south-1a   c5n.xlarge  0.054100
-1816       ap-south-1b   c5d.xlarge  0.054100
-2858       ap-south-1a    c5.xlarge  0.054200
-2750       ap-south-1a   c5d.xlarge  0.054200
-1810       ap-south-1b    c5.xlarge  0.054200
-2109       ap-south-1b   c5n.xlarge  0.054200
+      SpotPrice AvailabilityZone InstanceType
+42061  0.038000       us-east-2a    c5.xlarge
+40121  0.038000       us-east-2a   c5d.xlarge
+40650  0.038000       us-east-2a   c5n.xlarge
+42060  0.038000       us-east-2b    c5.xlarge
+39630  0.038000       us-east-2b   c5d.xlarge
+40649  0.038000       us-east-2b   c5n.xlarge
+42059  0.038000       us-east-2c    c5.xlarge
+41712  0.038000       us-east-2c   c5d.xlarge
+40648  0.038000       us-east-2c   c5n.xlarge
+39716  0.042400       us-east-2c   c5a.xlarge
+39592  0.044100       us-east-2b   c5a.xlarge
+3105   0.052800      ap-south-1c   c5a.xlarge
+3104   0.053200      ap-south-1b   c5a.xlarge
+2505   0.053500      ap-south-1a   c5a.xlarge
+2831   0.054000      ap-south-1a   c5n.xlarge
+3430   0.054000      ap-south-1b   c5d.xlarge
+3768   0.054100      ap-south-1a   c5d.xlarge
+1765   0.054100      ap-south-1b   c5n.xlarge
+1727   0.054100      ap-south-1c   c5d.xlarge
+2981   0.054100      ap-south-1c   c5n.xlarge
 ```
 
 ## Links
