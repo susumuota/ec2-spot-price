@@ -33,11 +33,11 @@ console = Console(stderr=True)
 
 
 SPOT_PRICE_COLUMNS = {
-    'SpotPrice': {'color': 'cyan', 'name': 'Price'},
-    'AvailabilityZone': {'color': 'magenta', 'name': 'Zone'},
-    'InstanceType': {'color': 'green', 'name': 'Instance'},
-    'ProductDescription': {'color': 'yellow', 'name': 'OS'},
-    'Timestamp': {'color': 'blue', 'name': 'Timestamp'},
+    'SpotPrice': {'highlight': '[bold bright_cyan]', 'name': 'Price'},
+    'AvailabilityZone': {'highlight': '[bold bright_magenta]', 'name': 'Zone'},
+    'InstanceType': {'highlight': '[bold bright_green]', 'name': 'Instance'},
+    'ProductDescription': {'highlight': '[bold bright_yellow]', 'name': 'OS'},
+    'Timestamp': {'highlight': '[bold bright_blue]', 'name': 'Timestamp'},
 }
 
 
@@ -66,25 +66,29 @@ def get_spot_prices(region_names=[], instance_types=[], os_types=[],
         columns = list(SPOT_PRICE_COLUMNS.keys())
         df.sort_values(by=columns, inplace=True, ascending=True)
         return df[columns]
-    rs = region_names or get_regions()
-    ps = sum([get_prices(r, instance_types, os_types)
-              for r in track(rs, console=console, transient=True,
-                             description='Retrieving')], [])
-    return to_df(ps)
+
+    regions = region_names or get_regions()
+    prices = sum([get_prices(r, instance_types, os_types)
+                  for r in track(regions, console=console, transient=True,
+                                 description='Retrieving')], [])
+    return to_df(prices)
 
 
-def print_csv(ps):
-    print(ps.to_csv(path_or_buf=None, index=False))
+def print_csv(prices):
+    df = prices.copy(deep=True)
+    df['Timestamp'] = df['Timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    print(df.to_csv(path_or_buf=None, index=False), end='')
 
 
-def print_table(ps):
-    ps['Timestamp'] = ps['Timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    min_index = ps['SpotPrice'] == ps['SpotPrice'].min()
+def print_table(prices):
+    df = prices.copy(deep=True)
+    df['Timestamp'] = df['Timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    min_index = df['SpotPrice'] == df['SpotPrice'].min()
     for k, v in SPOT_PRICE_COLUMNS.items():
-        ps[k][min_index] = f'[bold bright_{v["color"]}]' + ps[k][min_index]
+        df[k][min_index] = v['highlight'] + df[k][min_index]
     names = [v['name'] for v in SPOT_PRICE_COLUMNS.values()]
     table = Table(*names, box=box.HORIZONTALS)
-    for row in ps.itertuples(name=None):
+    for row in df.itertuples(name=None):
         table.add_row(*list(row)[1:])
     console.print(table)
 
@@ -108,11 +112,11 @@ def main():
         '-csv', '--csv', action='store_true',
         help='output CSV format. (default: False)')
     args = parser.parse_args()
-    r = args.region_names.split(',') if args.region_names else []
-    i = args.instance_types.split(',') if args.instance_types else []
-    o = args.os_types.split(',') if args.os_types else []
-    ps = get_spot_prices(r, i, o)
-    (print_csv if args.csv else print_table)(ps)
+    regions = args.region_names.split(',') if args.region_names else []
+    instances = args.instance_types.split(',') if args.instance_types else []
+    oss = args.os_types.split(',') if args.os_types else []
+    prices = get_spot_prices(regions, instances, oss)
+    (print_csv if args.csv else print_table)(prices)
     return 0
 
 
