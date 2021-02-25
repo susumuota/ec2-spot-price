@@ -2,8 +2,7 @@
 
 This Python module provides simple functions and commands to retrieve [Amazon EC2 spot instance price](https://aws.amazon.com/ec2/spot/pricing/) by AWS API.
 
-<p align="center"><img src="img/demo.gif?raw=true" /></p>
-
+![](https://raw.githubusercontent.com/susumuota/ec2-spot-price/master/img/demo.gif)
 
 ## Install
 
