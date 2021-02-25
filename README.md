@@ -2,6 +2,8 @@
 
 This Python module provides simple functions and commands to retrieve [Amazon EC2 spot instance price](https://aws.amazon.com/ec2/spot/pricing/) by AWS API.
 
+<p align="center"><img src="img/demo.gif?raw=true" /></p>
+
 
 ## Install
 
@@ -137,15 +139,15 @@ Another example to retrieve all of the spot prices in all regions with verbose o
    49822 spot_prices.csv
 % head spot_prices.csv
 SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
-0.000800,ap-south-1a,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
-0.000800,ap-south-1a,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
-0.000800,ap-south-1b,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
-0.000800,ap-south-1b,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
-0.000800,ap-south-1c,t4g.nano,Linux/UNIX,2021-02-24 17:41:52+00:00
-0.000800,ap-south-1c,t4g.nano,SUSE Linux,2021-02-24 17:41:52+00:00
-0.000900,ap-south-1a,t3a.nano,Linux/UNIX,2021-02-24 17:06:18+00:00
-0.000900,ap-south-1a,t3a.nano,SUSE Linux,2021-02-24 17:06:18+00:00
-0.000900,ap-south-1b,t3a.nano,Linux/UNIX,2021-02-24 17:06:18+00:00
+0.000800,ap-south-1a,t4g.nano,Linux/UNIX,2021-02-24 17:41:52
+0.000800,ap-south-1a,t4g.nano,SUSE Linux,2021-02-24 17:41:52
+0.000800,ap-south-1b,t4g.nano,Linux/UNIX,2021-02-24 17:41:52
+0.000800,ap-south-1b,t4g.nano,SUSE Linux,2021-02-24 17:41:52
+0.000800,ap-south-1c,t4g.nano,Linux/UNIX,2021-02-24 17:41:52
+0.000800,ap-south-1c,t4g.nano,SUSE Linux,2021-02-24 17:41:52
+0.000900,ap-south-1a,t3a.nano,Linux/UNIX,2021-02-24 17:06:18
+0.000900,ap-south-1a,t3a.nano,SUSE Linux,2021-02-24 17:06:18
+0.000900,ap-south-1b,t3a.nano,Linux/UNIX,2021-02-24 17:06:18
 ```
 
 Then open `spot_prices.csv` with spread sheet application like Excel.
@@ -190,22 +192,22 @@ Function `print_table` prints spot prices with table format.
  ─────────────────────────────────────────────────────────────────────── 
 >>> ec2sp.print_csv(df)
 SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
-0.038000,us-east-2a,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
-0.038000,us-east-2a,c5d.xlarge,Linux/UNIX,2021-02-24 18:23:40+00:00
-0.038000,us-east-2b,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
-0.038000,us-east-2b,c5d.xlarge,Linux/UNIX,2021-02-24 20:49:32+00:00
-0.038000,us-east-2c,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14+00:00
-0.038000,us-east-2c,c5d.xlarge,Linux/UNIX,2021-02-24 08:06:21+00:00
-0.066500,us-east-1c,c5.xlarge,Linux/UNIX,2021-02-24 15:56:41+00:00
-0.066800,us-east-1f,c5d.xlarge,Linux/UNIX,2021-02-24 18:38:06+00:00
-0.069600,us-east-1a,c5d.xlarge,Linux/UNIX,2021-02-24 17:55:16+00:00
-0.069700,us-east-1d,c5.xlarge,Linux/UNIX,2021-02-24 19:28:40+00:00
-0.069900,us-east-1b,c5.xlarge,Linux/UNIX,2021-02-24 21:10:11+00:00
-0.072100,us-east-1a,c5.xlarge,Linux/UNIX,2021-02-24 16:55:41+00:00
-0.079600,us-east-1c,c5d.xlarge,Linux/UNIX,2021-02-24 21:01:42+00:00
-0.079600,us-east-1d,c5d.xlarge,Linux/UNIX,2021-02-24 14:31:55+00:00
-0.082500,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-24 21:35:41+00:00
-0.090300,us-east-1b,c5d.xlarge,Linux/UNIX,2021-02-24 03:58:17+00:00
+0.038000,us-east-2a,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14
+0.038000,us-east-2a,c5d.xlarge,Linux/UNIX,2021-02-24 18:23:40
+0.038000,us-east-2b,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14
+0.038000,us-east-2b,c5d.xlarge,Linux/UNIX,2021-02-24 20:49:32
+0.038000,us-east-2c,c5.xlarge,Linux/UNIX,2021-02-24 03:59:14
+0.038000,us-east-2c,c5d.xlarge,Linux/UNIX,2021-02-24 08:06:21
+0.066500,us-east-1c,c5.xlarge,Linux/UNIX,2021-02-24 15:56:41
+0.066800,us-east-1f,c5d.xlarge,Linux/UNIX,2021-02-24 18:38:06
+0.069600,us-east-1a,c5d.xlarge,Linux/UNIX,2021-02-24 17:55:16
+0.069700,us-east-1d,c5.xlarge,Linux/UNIX,2021-02-24 19:28:40
+0.069900,us-east-1b,c5.xlarge,Linux/UNIX,2021-02-24 21:10:11
+0.072100,us-east-1a,c5.xlarge,Linux/UNIX,2021-02-24 16:55:41
+0.079600,us-east-1c,c5d.xlarge,Linux/UNIX,2021-02-24 21:01:42
+0.079600,us-east-1d,c5d.xlarge,Linux/UNIX,2021-02-24 14:31:55
+0.082500,us-east-1f,c5.xlarge,Linux/UNIX,2021-02-24 21:35:41
+0.090300,us-east-1b,c5d.xlarge,Linux/UNIX,2021-02-24 03:58:17
 ```
 
 Another example to retrieve all of the spot prices in all regions.
