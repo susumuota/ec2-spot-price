@@ -20,6 +20,11 @@ from datetime import datetime, timezone
 import logging
 import sys
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata  # python < 3.8
+
 import boto3
 import pandas as pd
 from rich import box
@@ -28,6 +33,7 @@ from rich.progress import track
 from rich.table import Table
 
 
+__version__ = importlib_metadata.version(__package__)  # not __name__
 logger = logging.getLogger(__name__)
 console = Console(stderr=True)
 
@@ -95,7 +101,7 @@ def print_table(prices):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='retrieve Amazon EC2 spot instance price')
+        description='retrieve Amazon EC2 spot instance price.')
     parser.add_argument(
         '-r', '--region_names', type=str,
         default='us-east-1,us-east-2,us-west-1,us-west-2',
@@ -111,6 +117,9 @@ def main():
     parser.add_argument(
         '-csv', '--csv', action='store_true',
         help='output CSV format. (default: False)')
+    parser.add_argument(
+        '-V', '--version', action='version', help='show version.',
+        version=f'%(prog)s {__version__}')
     args = parser.parse_args()
     regions = args.region_names.split(',') if args.region_names else []
     instances = args.instance_types.split(',') if args.instance_types else []
