@@ -84,9 +84,9 @@ You can run `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`) command to
 ```sh
 % ec2_spot_price -h
 usage: ec2_spot_price [-h] [-r REGION_NAMES] [-i INSTANCE_TYPES] [-o OS_TYPES]
-                      [-csv]
+                      [-csv] [-V]
 
-retrieve Amazon EC2 spot instance price
+retrieve Amazon EC2 spot instance price.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -100,6 +100,7 @@ optional arguments:
   -o OS_TYPES, --os_types OS_TYPES
                         filter OS types. (default: "Linux/UNIX")
   -csv, --csv           output CSV format. (default: False)
+  -V, --version         show version.
 ```
 
 You can specify region names by `-r`, instance types by `-i` and OS types by `-o`. For example, the following command shows table of `us-east-1,us-east-2` regions, `c5.xlarge,c5d.xlarge` instances and `Linux/UNIX` OS (default value).
@@ -250,14 +251,13 @@ You can pass spot prices to `pd.DataFrame` and filter them.
 ## Links
 
 - https://aws.amazon.com/ec2/spot/pricing/
+- https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html
 - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances-history.html
 - https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-spot-price-history.html
 - https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html
 - https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html
-- https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html?highlight=describe%20spot#EC2.Client.describe_spot_price_history
-- https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html
 - https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration
-
+- https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html?highlight=describe%20spot#EC2.Client.describe_spot_price_history
 
 ## Author
 
