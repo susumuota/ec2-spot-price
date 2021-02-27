@@ -47,47 +47,55 @@ SPOT_PRICE_COLUMNS = {
 }
 
 
-def get_spot_prices(region_names=[], instance_types=[], os_types=[],
-                    page_size=1000, max_items=10000):
-    def get_regions():
+def spot_prices(regions=[], instances=[], oss=[],
+                page_size=1000, max_items=10000):
+    def all_regions():
         ec2 = boto3.client('ec2')
         # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeRegions.html
-        return [r['RegionName'] for r in ec2.describe_regions()['Regions']]
+        logger.debug('ec2.describe_regions...')
+        rs = ec2.describe_regions()
+        logger.debug(('ec2.describe_regions...done: '
+                      f'retrieved {len(rs["Regions"])} items'))
+        return [r['RegionName'] for r in rs['Regions']]
 
-    def get_prices(region_name, instance_types, os_types):
-        ec2 = boto3.client('ec2', region_name=region_name)
+    def region_spot_prices(region, instances, oss):
+        ec2 = boto3.client('ec2', region_name=region)
         # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSpotPriceHistory.html
         # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/paginators.html
         paginator = ec2.get_paginator('describe_spot_price_history')
         page_iterator = paginator.paginate(
-            InstanceTypes=instance_types,
-            ProductDescriptions=os_types,
+            InstanceTypes=instances,
+            ProductDescriptions=oss,
             StartTime=datetime.now(timezone.utc).isoformat(),  # only latest
             PaginationConfig={'PageSize': page_size, 'MaxItems': max_items})
-        return sum([p['SpotPriceHistory'] for p in page_iterator], [])
+        logger.debug('ec2.describe_spot_price_history...')
+        prices = sum([p['SpotPriceHistory'] for p in page_iterator], [])
+        logger.debug(('ec2.describe_spot_price_history...done: '
+                      f'retrieved {len(prices)} items from {region}'))
+        return prices
 
-    def to_df(json):
-        assert json and len(json) > 0
-        df = pd.DataFrame(json)
+    def to_df(prices_json):
+        assert prices_json and len(prices_json) > 0
+        df = pd.DataFrame(prices_json)
         columns = list(SPOT_PRICE_COLUMNS.keys())
         df.sort_values(by=columns, inplace=True, ascending=True)
         return df[columns]
 
-    regions = region_names or get_regions()
-    prices = sum([get_prices(r, instance_types, os_types)
+    regions = regions or all_regions()
+    prices = sum([region_spot_prices(r, instances, oss)
                   for r in track(regions, console=console, transient=True,
                                  description='Retrieving')], [])
     return to_df(prices)
 
 
-def print_csv(prices):
-    df = prices.copy(deep=True)
+def print_csv(prices_df):
+    df = prices_df.copy(deep=True)
     df['Timestamp'] = df['Timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
     print(df.to_csv(path_or_buf=None, index=False), end='')
 
 
-def print_table(prices):
-    df = prices.copy(deep=True)
+def print_table(prices_df):
+    df = prices_df.copy(deep=True)
     df['Timestamp'] = df['Timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
     min_index = df['SpotPrice'] == df['SpotPrice'].min()
     for k, v in SPOT_PRICE_COLUMNS.items():
@@ -103,28 +111,34 @@ def main():
     parser = argparse.ArgumentParser(
         description='retrieve Amazon EC2 spot instance price.')
     parser.add_argument(
-        '-r', '--region_names', type=str,
+        '-r', '--region', type=str,
         default='us-east-1,us-east-2,us-west-1,us-west-2',
-        help=('filter regions. if "" is specified, retrieve all of the '
+        help=('filter by regions. if "" is specified, retrieve all of the '
               'regions. (default: "us-east-1,us-east-2,us-west-1,us-west-2")'))
     parser.add_argument(
-        '-i', '--instance_types', type=str, default=None,
-        help=('filter instance types e.g. "g3.4xlarge,p2.xlarge". (default: '
-              'retrieve all of the instance types)'))
+        '-i', '--instance', type=str, default=None,
+        help=('filter by instance types e.g. "g3.4xlarge,p2.xlarge". '
+              '(default: retrieve all of the instance types)'))
     parser.add_argument(
-        '-o', '--os_types', type=str, default='Linux/UNIX',
-        help='filter OS types. (default: "Linux/UNIX")')
+        '-o', '--os', type=str, default='Linux/UNIX',
+        help='filter by OS types. (default: "Linux/UNIX")')
     parser.add_argument(
         '-csv', '--csv', action='store_true',
-        help='output CSV format. (default: False)')
+        help='output by CSV format. (default: False)')
+    parser.add_argument(
+        '-d', '--debug', action='store_true', help='show debug information.')
     parser.add_argument(
         '-V', '--version', action='version', help='show version.',
         version=f'%(prog)s {__version__}')
     args = parser.parse_args()
-    regions = args.region_names.split(',') if args.region_names else []
-    instances = args.instance_types.split(',') if args.instance_types else []
-    oss = args.os_types.split(',') if args.os_types else []
-    prices = get_spot_prices(regions, instances, oss)
+    if args.debug:
+        logging.basicConfig(
+            format='%(asctime)s %(levelname)s %(funcName)s: %(message)s')
+        logging.getLogger(__name__).setLevel(logging.DEBUG)
+    regions = args.region.split(',') if args.region else []
+    instances = args.instance.split(',') if args.instance else []
+    oss = args.os.split(',') if args.os else []
+    prices = spot_prices(regions, instances, oss)
     (print_csv if args.csv else print_table)(prices)
     return 0
 

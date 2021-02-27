@@ -83,23 +83,22 @@ You can run `ec2_spot_price` (or `python /path/to/ec2_spot_price.py`) command to
 
 ```sh
 % ec2_spot_price -h
-usage: ec2_spot_price [-h] [-r REGION_NAMES] [-i INSTANCE_TYPES] [-o OS_TYPES]
-                      [-csv] [-V]
+usage: ec2_spot_price [-h] [-r REGION] [-i INSTANCE] [-o OS] [-csv] [-d] [-V]
 
 retrieve Amazon EC2 spot instance price.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -r REGION_NAMES, --region_names REGION_NAMES
-                        filter regions. if "" is specified, retrieve all of
+  -r REGION, --region REGION
+                        filter by regions. if "" is specified, retrieve all of
                         the regions. (default: "us-east-1,us-east-2,us-
                         west-1,us-west-2")
-  -i INSTANCE_TYPES, --instance_types INSTANCE_TYPES
-                        filter instance types e.g. "g3.4xlarge,p2.xlarge".
+  -i INSTANCE, --instance INSTANCE
+                        filter by instance types e.g. "g3.4xlarge,p2.xlarge".
                         (default: retrieve all of the instance types)
-  -o OS_TYPES, --os_types OS_TYPES
-                        filter OS types. (default: "Linux/UNIX")
-  -csv, --csv           output CSV format. (default: False)
+  -o OS, --os OS        filter by OS types. (default: "Linux/UNIX")
+  -csv, --csv           output by CSV format. (default: False)
+  -d, --debug           show debug information.
   -V, --version         show version.
 ```
 
@@ -157,7 +156,7 @@ Then open `spot_prices.csv` with spread sheet application like Excel.
 
 There are three functions.
 
-Function `get_spot_prices` retrieves spot prices as list.
+Function `spot_prices` retrieves spot prices as list.
 
 Function `print_csv` prints spot prices with CSV format.
 
@@ -166,7 +165,7 @@ Function `print_table` prints spot prices with table format.
 ```python
 % python
 >>> import ec2_spot_price as ec2sp
->>> df = ec2sp.get_spot_prices(['us-east-1', 'us-east-2'], ['c5.xlarge', 'c5d.xlarge'], ['Linux/UNIX'])
+>>> df = ec2sp.spot_prices(['us-east-1', 'us-east-2'], ['c5.xlarge', 'c5d.xlarge'], ['Linux/UNIX'])
 >>> len(df)
 16
 >>> ec2sp.print_table(df)
@@ -211,11 +210,11 @@ SpotPrice,AvailabilityZone,InstanceType,ProductDescription,Timestamp
 ```
 
 Another example to retrieve all of the spot prices in all regions.
-You can pass spot prices to `pd.DataFrame` and filter them.
+You can use `pd.DataFrame` methods to manipulate them.
 
 ```python
 >>> import ec2_spot_price as ec2sp
->>> df = ec2sp.get_spot_prices([], [], [])
+>>> df = ec2sp.spot_prices([], [], [])
 >>> len(df)
 49817
 >>> df = df.query('ProductDescription == "Linux/UNIX"')
